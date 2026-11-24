@@ -77,16 +77,13 @@ public class WebEventCrawlerService {
                 }
             }
 
-            // 3. Ensure all discovered events are APPROVED and live on the platform
-            db.update("UPDATE events SET status = 'APPROVED' WHERE status = 'PENDING' AND source_id = ?", sourceId);
-
             log.info("Web search completed. Scanned {} events/competitions, added/updated {} items.", totalScanned, newEvents);
         } catch (Exception ex) {
             log.warn("Web search encountered an issue: {}", ex.getMessage());
             status = "PARTIAL";
             errorMsg = ex.getMessage();
 
-            // Fallback: Ensure at least curated Indian hackathons are registered and approved
+            // Fallback: Ensure curated Indian hackathons are registered into pending moderation
             try {
                 List<Map<String, Object>> fallbackList = getCuratedIndianAndGlobalHackathons();
                 for (Map<String, Object> event : fallbackList) {
@@ -94,7 +91,6 @@ public class WebEventCrawlerService {
                         newEvents++;
                     }
                 }
-                db.update("UPDATE events SET status = 'APPROVED' WHERE status = 'PENDING' AND source_id = ?", sourceId);
             } catch (Exception ignored) {
             }
         }
@@ -401,10 +397,10 @@ public class WebEventCrawlerService {
                 source_id, external_event_id, status, created_at, updated_at
             ) VALUES (
                 ?, ?, ?, ?, ?, ?, ?,
-                ?, ?, 'APPROVED', now(), now()
+                ?, ?, 'PENDING', now(), now()
             )
             ON CONFLICT (source_id, external_event_id) WHERE source_id IS NOT NULL AND external_event_id IS NOT NULL
-            DO UPDATE SET status = 'APPROVED', title = EXCLUDED.title, description = EXCLUDED.description,
+            DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description,
                           event_url = EXCLUDED.event_url, venue = EXCLUDED.venue, updated_at = now()
             """,
             eventId, safeTitle, desc, url, venue, startTs, endTs,

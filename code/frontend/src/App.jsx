@@ -1315,14 +1315,6 @@ function Events({ me, onUserUpdate, setNotice }) {
         sub="Discover approved hackathons, workshops, and gatherings—or apply to participate."
         action={
           <div className="page-head-actions">
-            <button
-              className="btn btn-secondary"
-              onClick={handleSyncWeb}
-              disabled={syncingWeb}
-              title="Search and crawl upcoming Indian and global hackathons"
-            >
-              <Sparkles size={15} /> {syncingWeb ? 'Syncing...' : 'Sync Indian Hackathons'}
-            </button>
             {!me && (
               <NavLink to="/login" className="btn btn-primary">
                 <LogIn size={15} /> Sign in to Apply

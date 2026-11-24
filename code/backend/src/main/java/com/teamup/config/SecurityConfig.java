@@ -24,7 +24,6 @@ import java.util.Set;
             .authorizeHttpRequests(a -> a
                 .requestMatchers("/oauth2/**","/login/**","/swagger-ui/**","/swagger-ui.html","/v3/api-docs/**","/actuator/health","/api/v1/health").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/v1/events","/api/v1/posts","/api/v1/skills").permitAll()
-                .requestMatchers(HttpMethod.POST,"/api/v1/events/sync").permitAll()
                 .requestMatchers("/api/v1/auth/me","/api/v1/auth/logout","/api/v1/auth/refresh","/api/v1/auth/demo-login","/api/v1/admin/login").permitAll()
                 .anyRequest().authenticated()
             )

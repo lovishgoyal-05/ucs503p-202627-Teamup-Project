@@ -344,9 +344,6 @@ import java.util.*;
         requireAdmin(userId(a));
         return crawlerService.syncNow();
     }
-    public Map<String, Object> syncPublicEvents() {
-        return crawlerService.syncNow();
-    }
     private void requireAdmin(UUID id) {
         if(!repo.hasRole(id,"ADMIN"))throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Admin role required");
     }

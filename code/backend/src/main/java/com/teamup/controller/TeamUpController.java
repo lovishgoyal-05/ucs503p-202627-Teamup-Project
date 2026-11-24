@@ -19,9 +19,6 @@ import java.util.*;
     @GetMapping("/health") public Map<String, Object> health() {
         return Map.of("status","ok","service","teamup-api");
     }
-    @PostMapping("/events/sync") public Map<String, Object> syncEvents() {
-        return service.syncPublicEvents();
-    }
     @GetMapping("/auth/me") public UserResponse me(Authentication a) {
         return UserMapper.fromRow(service.me(a));
     }
