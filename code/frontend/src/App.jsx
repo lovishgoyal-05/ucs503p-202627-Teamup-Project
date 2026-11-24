@@ -482,6 +482,8 @@ function AdminPortal({ me, setNotice, onUserUpdate }) {
   const [stats, setStats] = useState(null);
   const [pendingEvents, setPendingEvents] = useState([]);
   const [users, setUsers] = useState([]);
+  const [usersPage, setUsersPage] = useState(0);
+  const usersPageSize = 25;
   const [tab, setTab] = useState('events');
   const [loading, setLoading] = useState(true);
   const [syncingWeb, setSyncingWeb] = useState(false);
@@ -598,14 +600,6 @@ function AdminPortal({ me, setNotice, onUserUpdate }) {
 
       {err && <div className="notice">{err}</div>}
 
-      {/* Metrics Grid */}
-      <div className="stats-grid">
-        <Stat icon={<CalendarDays />} label="Pending Events" value={stats?.pendingEvents ?? '—'} tone="orange" />
-        <Stat icon={<CheckCircle2 />} label="Approved Events" value={stats?.approvedEvents ?? '—'} tone="green" />
-        <Stat icon={<Users />} label="Registered Users" value={stats?.users ?? '—'} tone="blue" />
-        <Stat icon={<Briefcase />} label="Open Posts" value={stats?.openPosts ?? '—'} tone="purple" />
-      </div>
-
       {/* Filter Tabs */}
       <div className="filter-tabs">
         <button
@@ -669,51 +663,82 @@ function AdminPortal({ me, setNotice, onUserUpdate }) {
         </div>
       )}
 
-      {tab === 'users' && (
-        <div className="panel">
-          <div className="panel-title">
-            <div>
-              <h2>User Directory</h2>
-              <p>All registered platform accounts and their roles.</p>
+      {tab === 'users' && (() => {
+        const totalUserPages = Math.ceil(users.length / usersPageSize) || 1;
+        const pagedUsers = users.slice(usersPage * usersPageSize, (usersPage + 1) * usersPageSize);
+        return (
+          <div className="panel">
+            <div className="panel-title">
+              <div>
+                <h2>User Directory</h2>
+                <p>All registered platform accounts ({users.length} total).</p>
+              </div>
+              <Users />
             </div>
-            <Users />
-          </div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Email</th>
-                  <th>Roles</th>
-                  <th>Joined</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map(u => (
-                  <tr key={u.id}>
-                    <td>
-                      <b>{u.fullName || 'Anonymous'}</b>
-                    </td>
-                    <td>{u.email}</td>
-                    <td>
-                      {(u.roles || '').split(',').map((r, i) => (
-                        <span className="role-badge-pill" key={i}>{r.trim()}</span>
-                      ))}
-                    </td>
-                    <td>{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—'}</td>
-                    <td>
-                      <span className="online-dot" style={{ display: 'inline-block', marginRight: '6px' }} />
-                      Active
-                    </td>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Roles</th>
+                    <th>Joined</th>
+                    <th>Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {pagedUsers.map(u => (
+                    <tr key={u.id}>
+                      <td>
+                        <b>{u.fullName || 'Anonymous'}</b>
+                      </td>
+                      <td>{u.email}</td>
+                      <td>
+                        {(u.roles || '').split(',').map((r, i) => (
+                          <span className="role-badge-pill" key={i}>{r.trim()}</span>
+                        ))}
+                      </td>
+                      <td>{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—'}</td>
+                      <td>
+                        <span className="online-dot" style={{ display: 'inline-block', marginRight: '6px' }} />
+                        Active
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {users.length > usersPageSize && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 8px', borderTop: '1px solid var(--line-subtle)', marginTop: '16px', flexWrap: 'wrap', gap: '12px' }}>
+                <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+                  Showing {usersPage * usersPageSize + 1} to {Math.min((usersPage + 1) * usersPageSize, users.length)} of {users.length} students
+                </span>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => setUsersPage(p => Math.max(0, p - 1))}
+                    disabled={usersPage === 0}
+                  >
+                    ← Previous Page
+                  </button>
+                  <span style={{ fontSize: '13px', fontWeight: 600, padding: '0 8px' }}>
+                    Page {usersPage + 1} of {totalUserPages}
+                  </span>
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => setUsersPage(p => Math.min(totalUserPages - 1, p + 1))}
+                    disabled={usersPage >= totalUserPages - 1}
+                  >
+                    Next Page →
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
@@ -1239,6 +1264,9 @@ function PostCard({ post, index = 0, onJoin }) {
 
 function Events({ me, onUserUpdate, setNotice }) {
   const [items, setItems] = useState([]);
+  const [page, setPage] = useState(0);
+  const [total, setTotal] = useState(0);
+  const pageSize = 20;
   const [myEvents, setMyEvents] = useState([]);
   const [myApplications, setMyApplications] = useState([]);
   const [pendingEvents, setPendingEvents] = useState([]);
@@ -1252,9 +1280,13 @@ function Events({ me, onUserUpdate, setNotice }) {
   const isOrganizer = me?.roles?.includes('ORGANIZER') || me?.roles?.includes('ADMIN');
   const isAdmin = me?.roles?.includes('ADMIN');
 
-  const load = () => {
-    api('/events')
-      .then(d => setItems(d.items || []))
+  const load = (targetPage = page) => {
+    api(`/events?page=${targetPage}&size=${pageSize}`)
+      .then(d => {
+        setItems(d.items || []);
+        if (d.total !== undefined) setTotal(d.total);
+        else setTotal(d.items?.length || 0);
+      })
       .catch(e => setErr(e.message));
 
     if (me) {
@@ -1267,7 +1299,7 @@ function Events({ me, onUserUpdate, setNotice }) {
   };
 
   useEffect(() => {
-    load();
+    load(page);
   }, [me, isAdmin]);
 
   const handleSyncWeb = async () => {
@@ -1382,20 +1414,54 @@ function Events({ me, onUserUpdate, setNotice }) {
       </div>
 
       {tab === 'all' && (
-        <div className="event-grid event-grid-wide">
-          {items.map((e, i) => (
-            <EventCard
-              key={e.id}
-              event={e}
-              index={i}
-              onApply={() => {
-                if (!me) navigate('/login');
-                else setApplyModalEvent(e);
-              }}
-            />
-          ))}
-          {!items.length && <Empty text="No approved events available right now." />}
-        </div>
+        <>
+          <div className="event-grid event-grid-wide">
+            {items.map((e, i) => (
+              <EventCard
+                key={e.id}
+                event={e}
+                index={i}
+                onApply={() => {
+                  if (!me) navigate('/login');
+                  else setApplyModalEvent(e);
+                }}
+              />
+            ))}
+            {!items.length && <Empty text="No approved events available right now." />}
+          </div>
+
+          {(total > pageSize || items.length === pageSize || page > 0) && (
+            <div className="pagination-bar" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginTop: '28px', padding: '16px 0' }}>
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={() => {
+                  const newPage = Math.max(0, page - 1);
+                  setPage(newPage);
+                  load(newPage);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                disabled={page === 0}
+              >
+                ← Previous Page
+              </button>
+              <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                Page {page + 1} {total > 0 ? `of ${Math.ceil(total / pageSize)}` : ''}
+              </span>
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={() => {
+                  const newPage = page + 1;
+                  setPage(newPage);
+                  load(newPage);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                disabled={total > 0 ? (page + 1) * pageSize >= total : items.length < pageSize}
+              >
+                Next Page →
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {tab === 'applied' && (

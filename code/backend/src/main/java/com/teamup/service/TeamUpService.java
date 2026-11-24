@@ -331,8 +331,16 @@ import java.util.*;
             LEFT JOIN roles r ON r.id = ur.role_id
             GROUP BY u.id, u.email, u.full_name, u.is_active, u.created_at
             ORDER BY u.created_at DESC
-            LIMIT 50
+            LIMIT 1000
             """);
+    }
+
+    public long countApprovedEvents(String q) {
+        if (q == null || q.isBlank()) {
+            return repo.countWhere("events", "APPROVED");
+        }
+        Long count = db.queryForObject("SELECT count(*) FROM events WHERE status = 'APPROVED' AND lower(title) LIKE ?", Long.class, "%" + q.toLowerCase() + "%");
+        return count == null ? 0 : count;
     }
 
     public Map<String, Object> dashboard(Authentication a) {

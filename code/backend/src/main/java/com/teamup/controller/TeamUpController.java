@@ -24,7 +24,7 @@ import java.util.*;
     }
     @GetMapping("/events") public Map<String, Object> events(@RequestParam(defaultValue="0") int page,@RequestParam(required=false) Integer size,@RequestParam(required=false) String q) {
         int p=Math.max(0,page), s=Math.min(properties.getMaxPageSize(),Math.max(1,size==null?properties.getDefaultPageSize():size));
-        return Map.of("items",service.events(p,s,q),"page",p,"size",s);
+        return Map.of("items",service.events(p,s,q),"page",p,"size",s,"total",service.countApprovedEvents(q));
     }
     @GetMapping("/events/mine") public List<Map<String, Object>> myEvents(Authentication a) {
         return service.myEvents(a);
