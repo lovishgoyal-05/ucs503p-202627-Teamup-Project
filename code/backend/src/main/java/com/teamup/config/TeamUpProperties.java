@@ -9,8 +9,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "teamup")
 public class TeamUpProperties {
     private String frontendOrigin = "http://localhost:5173";
+    private String allowedOrigins = "http://localhost:5173,http://127.0.0.1:5173";
     private String jwtSecret = "local-development-secret-key-change-this-32bytes-minimum";
     private boolean cookieSecure;
+    private String cookieSameSite = "Lax";
     private String refreshCookieName = "teamup_refresh";
     private long accessTokenMinutes = 15;
     private long refreshInactivityDays = 7;
@@ -23,10 +25,14 @@ public class TeamUpProperties {
 
     public String getFrontendOrigin() { return frontendOrigin; }
     public void setFrontendOrigin(String value) { this.frontendOrigin = value; }
+    public String getAllowedOrigins() { return allowedOrigins; }
+    public void setAllowedOrigins(String value) { this.allowedOrigins = value; }
     public String getJwtSecret() { return jwtSecret; }
     public void setJwtSecret(String value) { this.jwtSecret = value; }
     public boolean isCookieSecure() { return cookieSecure; }
     public void setCookieSecure(boolean value) { this.cookieSecure = value; }
+    public String getCookieSameSite() { return cookieSameSite; }
+    public void setCookieSameSite(String value) { this.cookieSameSite = value; }
     public String getRefreshCookieName() { return refreshCookieName; }
     public void setRefreshCookieName(String value) { this.refreshCookieName = value; }
     public long getAccessTokenMinutes() { return accessTokenMinutes; }

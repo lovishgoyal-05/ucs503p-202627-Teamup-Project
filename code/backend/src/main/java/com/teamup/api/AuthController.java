@@ -41,35 +41,17 @@ import java.util.*;
         UUID nextId=UUID.randomUUID();
         db.update("insert into refresh_tokens(id,user_id,family_id,token_hash,expires_at,absolute_expires_at) values(?,?,?,?,least(now()+(? * interval '1 day'),?),?)",nextId,user,family,tokens.hash(next),properties.getRefreshInactivityDays(),row.get("absolute_expires_at"),row.get("absolute_expires_at"));
         db.update("update refresh_tokens set consumed_at=now(),last_used_at=now(),replaced_by=? where id=? and consumed_at is null",nextId,row.get("id"));
-        Cookie c=new Cookie(properties.getRefreshCookieName(),next);
-        c.setHttpOnly(true);
-        c.setSecure(properties.isCookieSecure());
-        c.setPath("/api/v1/auth");
-        c.setMaxAge((int)(properties.getAbsoluteSessionDays()*24*60*60));
-        c.setAttribute("SameSite","Lax");
-        res.addCookie(c);
+        res.addCookie(tokens.refreshCookie(next, (int)(properties.getAbsoluteSessionDays()*24*60*60)));
         return ResponseEntity.ok(Map.of("accessToken",tokens.accessToken(user,email),"tokenType","Bearer","expiresIn",properties.getAccessTokenMinutes()*60));
     }
     @PostMapping("/logout") public ResponseEntity<?> logout(HttpServletRequest req,HttpServletResponse res) {
         String raw=Arrays.stream(Optional.ofNullable(req.getCookies()).orElse(new Cookie[0])).filter(c->c.getName().equals(properties.getRefreshCookieName())).map(Cookie::getValue).findFirst().orElse(null);
         if(raw!=null)db.update("update refresh_tokens set revoked_at=coalesce(revoked_at,now()) where token_hash=?",tokens.hash(raw));
-        Cookie c=new Cookie(properties.getRefreshCookieName(),"");
-        c.setHttpOnly(true);
-        c.setSecure(properties.isCookieSecure());
-        c.setPath("/api/v1/auth");
-        c.setMaxAge(0);
-        c.setAttribute("SameSite","Lax");
-        res.addCookie(c);
+        res.addCookie(tokens.refreshCookie("", 0));
         return ResponseEntity.noContent().build();
     }
     private ResponseEntity<?> expire(HttpServletResponse res) {
-        Cookie c=new Cookie(properties.getRefreshCookieName(),"");
-        c.setHttpOnly(true);
-        c.setSecure(properties.isCookieSecure());
-        c.setPath("/api/v1/auth");
-        c.setMaxAge(0);
-        c.setAttribute("SameSite","Lax");
-        res.addCookie(c);
+        res.addCookie(tokens.refreshCookie("", 0));
         return ResponseEntity.status(401).body(Map.of("title","Refresh session is invalid or expired","status",401));
     }
 }

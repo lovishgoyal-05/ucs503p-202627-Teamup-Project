@@ -53,13 +53,7 @@ import java.util.UUID;
             String raw=java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(java.security.SecureRandom.getSeed(48));
             UUID family=UUID.randomUUID();
             db.update("insert into refresh_tokens(id,user_id,family_id,token_hash,expires_at,absolute_expires_at) values(?,?,?,?,now()+(? * interval '1 day'),now()+(? * interval '1 day'))",UUID.randomUUID(),id,family,tokens.hash(raw),properties.getRefreshInactivityDays(),properties.getAbsoluteSessionDays());
-            Cookie cookie=new Cookie(properties.getRefreshCookieName(),raw);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(properties.isCookieSecure());
-            cookie.setPath("/api/v1/auth");
-            cookie.setMaxAge((int)(properties.getAbsoluteSessionDays()*24*60*60));
-            cookie.setAttribute("SameSite","Lax");
-            res.addCookie(cookie);
+            res.addCookie(tokens.refreshCookie(raw, (int)(properties.getAbsoluteSessionDays()*24*60*60)));
             String targetOrigin = origin;
             if ("http://localhost:5173".equals(origin) && req.getServerPort() != 8080) {
                 String scheme = req.getScheme();

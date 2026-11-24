@@ -2282,6 +2282,11 @@ function Callback({ onDone }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const t = new URLSearchParams(window.location.search).get('token');
+    if (t) {
+      setToken(t);
+      window.history.replaceState({}, '', window.location.pathname);
+    }
     api('/auth/me')
       .then(u => {
         onDone(u);

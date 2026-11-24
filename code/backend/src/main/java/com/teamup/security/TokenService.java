@@ -2,6 +2,7 @@ package com.teamup.security;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import com.teamup.config.TeamUpProperties;
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -31,5 +32,15 @@ import java.util.UUID;
     }
     public UUID verify(String token) {
         return UUID.fromString(Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().getSubject());
+    }
+    /** Builds the HttpOnly refresh cookie using deployment-configured Secure and SameSite flags. */
+    public Cookie refreshCookie(String value, int maxAgeSeconds) {
+        Cookie cookie = new Cookie(properties.getRefreshCookieName(), value);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(properties.isCookieSecure());
+        cookie.setPath("/api/v1/auth");
+        cookie.setMaxAge(maxAgeSeconds);
+        cookie.setAttribute("SameSite", properties.getCookieSameSite());
+        return cookie;
     }
 }

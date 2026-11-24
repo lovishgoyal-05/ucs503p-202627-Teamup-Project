@@ -1,7 +1,7 @@
-const envApiUrl = import.meta.env.VITE_API_URL;
+const envApiUrl = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
 const isLocalhost = typeof window !== 'undefined' &&
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-const API = `${envApiUrl || ''}/api/v1`;
+const API = `${envApiUrl}/api/v1`;
 let token = localStorage.getItem('teamup_access_token') || '';
 export function setToken(value){token=value||'';
  if(token)localStorage.setItem('teamup_access_token',token);
