@@ -9,6 +9,13 @@ node_modules/
 # Build files
 dist/
 build/
+target/
+*.jar
+*.war
+*.class
+
+# macOS junk
+__MACOSX/
 
 # Logs
 *.log

@@ -3,38 +3,23 @@
 **UCS503: Software Engineering (Project)**  
 **TIET Patiala**
 
-# The Sum Function in C++
+# TeamUp — Student Collaboration Platform
 
-**Author(s)**:
+TeamUp is a student collaboration, hackathon discovery, and team-building platform built with **React + Vite**, **Java 21 + Spring Boot 3.4**, and **PostgreSQL 17 + Flyway**.
 
-`(RGB)` Raghav B. Venkataramaiyer `<bv.raghav -at-
-thapar -dot- edu>`
+## Project Structure
 
-This project creates a sum function in c++ as a sample
-to illustrate how to compile a shared library and
-distribute it for use along with the binary.
+- `code/` — Application source code (`backend/`, `frontend/`, `docker-compose.yml`, `.env.example`, `README.md`)
+- `docs/` — Architecture, database schema, security review, and diagrams
+- `journals/` — Individual team member weekly journals
+- `project-proposal/`, `project-report-prototype-stage/`, `project-report-final/` — LaTeX project reports
 
-## Installation
+## Running Locally
 
-``` shell
-make -C code
-```
-
-This will create create a folder `dist` in `code`
-folder, with following contents
-
-```
-dist
- +-lib
- |  \-libbvr_math.so
- +-bin
-    \-run
-```
-
-## Usage
-
-``` shell
+```shell
 cd code
-export LD_LIBRARY_PATH=dist/lib
-./dist/bin/run
+cp .env.example .env   # Fill in GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, ADMIN_PASSCODE
+docker compose up -d db
+cd backend && mvn spring-boot:run
+cd ../frontend && npm install && npm run dev
 ```

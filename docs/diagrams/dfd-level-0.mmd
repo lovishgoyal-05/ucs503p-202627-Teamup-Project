@@ -1,0 +1,9 @@
+flowchart LR
+ Student[Student] -->|profile, skills, posts, join requests| System((TeamUp System))
+ System -->|events, matches, team status, notifications| Student
+ Organizer[Organizer] -->|event submission, cancellation| System
+ System -->|review status| Organizer
+ Admin[Admin] -->|approval, moderation, feed settings| System
+ System -->|dashboard, review queue, audit summary| Admin
+ System <-->|approved feed data| Feed[External event feeds]
+ Google[Google OIDC] <-->|identity assertion| System

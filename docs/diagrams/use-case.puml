@@ -1,0 +1,29 @@
+@startuml
+left to right direction
+actor Student
+actor Organizer
+actor Admin
+rectangle TeamUp {
+ usecase "Sign in with Google" as UC1
+ usecase "Manage profile and skills" as UC2
+ usecase "Browse approved events" as UC3
+ usecase "Create recruitment post" as UC4
+ usecase "Request to join team" as UC5
+ usecase "Review join requests" as UC6
+ usecase "Submit event" as UC7
+ usecase "Approve/reject events" as UC8
+ usecase "Configure event feeds" as UC9
+ usecase "View admin dashboard" as UC10
+}
+Student --> UC1
+Student --> UC2
+Student --> UC3
+Student --> UC4
+Student --> UC5
+Student --> UC6
+Organizer --> UC7
+Organizer --> UC3
+Admin --> UC8
+Admin --> UC9
+Admin --> UC10
+@enduml

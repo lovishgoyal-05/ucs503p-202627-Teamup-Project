@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:17
+    container_name: teamup-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-teamup}
+      POSTGRES_USER: ${POSTGRES_USER:-teamup}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-local}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - teamup_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-teamup} -d ${POSTGRES_DB:-teamup}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+volumes:
+  teamup_pgdata:

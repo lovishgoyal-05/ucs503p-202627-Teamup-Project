@@ -1,0 +1,12 @@
+flowchart LR
+ Student[Student] --> FE[React + Vite]
+ Organizer[Organizer] --> FE
+ Admin[Admin] --> FE
+ FE -->|REST JSON / JWT| API[Spring Boot API]
+ FE -->|Google OIDC| Google[Google Identity]
+ Google --> API
+ API --> DB[(PostgreSQL 17)]
+ API --> Flyway[Flyway migrations]
+ Feed[External event feeds] --> Sync[Scheduled feed adapter]
+ Sync --> DB
+ API --> Notify[In-app notifications]

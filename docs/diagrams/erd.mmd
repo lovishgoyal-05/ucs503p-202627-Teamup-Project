@@ -1,0 +1,18 @@
+erDiagram
+ USERS ||--|| OAUTH_ACCOUNTS : authenticates
+ USERS ||--o{ USER_ROLES : has
+ USERS ||--|| STUDENT_PROFILES : profile
+ USERS ||--o{ USER_SKILLS : lists
+ SKILLS ||--o{ USER_SKILLS : selected
+ USERS ||--o{ EVENTS : submits
+ EVENT_SOURCES ||--o{ EVENTS : imports
+ USERS ||--o{ POSTS : creates
+ POSTS ||--o{ POST_SKILLS : requires
+ SKILLS ||--o{ POST_SKILLS : tagged
+ POSTS ||--o| TEAMS : creates
+ TEAMS ||--o{ TEAM_MEMBERS : contains
+ USERS ||--o{ TEAM_MEMBERS : joins
+ POSTS ||--o{ JOIN_REQUESTS : receives
+ USERS ||--o{ JOIN_REQUESTS : submits
+ USERS ||--o{ NOTIFICATIONS : receives
+ USERS ||--o{ AUDIT_EVENTS : acts

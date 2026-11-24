@@ -1,0 +1,15 @@
+flowchart TB
+ Client[React client] --> Auth[1. Identity and session]
+ Client --> Profile[2. Profile and skills]
+ Client --> Discover[3. Event and post discovery]
+ Client --> Teams[4. Join request and team lifecycle]
+ Client --> Admin[5. Moderation and feed configuration]
+ Auth --> DB[(PostgreSQL)]
+ Profile --> DB
+ Discover --> DB
+ Teams --> DB
+ Admin --> DB
+ Feeds[External feeds] --> Import[6. Scheduled feed ingestion]
+ Import --> DB
+ Teams --> Notify[7. Notification service]
+ Notify --> DB
