@@ -1391,7 +1391,7 @@ function Events({ me, onUserUpdate, setNotice }) {
 
       {tab === 'all' && (
         <div className="event-grid event-grid-wide">
-          {(items.length > 0 ? items : sampleEvents).map((e, i) => (
+          {items.map((e, i) => (
             <EventCard
               key={e.id}
               event={e}
@@ -1402,6 +1402,7 @@ function Events({ me, onUserUpdate, setNotice }) {
               }}
             />
           ))}
+          {!items.length && <Empty text="No approved events available right now." />}
         </div>
       )}
 
