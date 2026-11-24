@@ -87,7 +87,12 @@ export async function getAdminUsers() {
 }
 
 export async function syncWebEvents() {
-  return api('/admin/events/sync-web', {
+  return api('/events/sync', {
+    method: 'POST'
+  });
+}
+export async function syncEvents() {
+  return api('/events/sync', {
     method: 'POST'
   });
 }

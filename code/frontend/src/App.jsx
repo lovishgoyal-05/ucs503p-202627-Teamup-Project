@@ -16,20 +16,49 @@ import {
 
 const sampleEvents = [
   {
-    id: 'demo1',
-    title: 'Campus Innovation Sprint',
-    description: 'Build practical solutions with a cross-disciplinary team.',
-    venue: 'Online / Campus',
-    startsAt: '2026-11-08T09:00:00Z',
-    organizerName: 'Innovation Hub'
+    id: 'sih-2026',
+    title: 'Smart India Hackathon (SIH) 2026',
+    description: 'World\'s biggest open innovation hackathon by Ministry of Education & AICTE across Hardware & Software tracks with grand national prizes.',
+    venue: 'Nationwide Nodal Centers / Virtual',
+    eventUrl: 'https://www.sih.gov.in',
+    startsAt: '2026-12-10T09:00:00Z',
+    organizerName: 'Ministry of Education & AICTE'
   },
   {
-    id: 'demo2',
-    title: 'Open Source Weekend',
-    description: 'Contribute to real projects and meet maintainers.',
-    venue: 'Online',
-    startsAt: '2026-11-15T10:00:00Z',
-    organizerName: 'Dev Club'
+    id: 'hackcbs-9',
+    title: 'hackCBS 9.0 — India\'s Largest Student Hackathon',
+    description: 'Premier 24-hour national hackathon hosted by Shaheed Sukhdev College of Business Studies, Delhi University. Featuring AI/ML, Web3, & FinTech.',
+    venue: 'SSCBS, University of Delhi, New Delhi',
+    eventUrl: 'https://hackcbs.tech',
+    startsAt: '2026-11-08T10:00:00Z',
+    organizerName: 'hackCBS Community'
+  },
+  {
+    id: 'ethindia-2026',
+    title: 'ETHIndia — Asia\'s Premier Web3 & Ethereum Hackathon',
+    description: 'Asia\'s flagship Ethereum builder gathering powered by Devfolio. Over 1,500 builders gather in Bengaluru/Mumbai with major bounties and grants.',
+    venue: 'Jio World Convention Centre, Mumbai / Bengaluru',
+    eventUrl: 'https://ethindia.co',
+    startsAt: '2026-12-04T10:00:00Z',
+    organizerName: 'Devfolio'
+  },
+  {
+    id: 'hackthisfall-2026',
+    title: 'Hack This Fall — Pan-India Community Hackathon',
+    description: 'Inclusive pan-India student hackathon with virtual tracks and Hacker Houses in Mumbai, Delhi NCR, and Bengaluru.',
+    venue: 'Hybrid (Bengaluru, Delhi NCR, Mumbai)',
+    eventUrl: 'https://hackthisfall.tech',
+    startsAt: '2026-11-20T09:00:00Z',
+    organizerName: 'Hack This Fall'
+  },
+  {
+    id: 'flipkart-grid-2026',
+    title: 'Flipkart GRiD — National Campus Engineering Challenge',
+    description: 'Flagship engineering competition testing problem-solving, smart commerce, robotics, and GenAI with direct PPIs and rewards.',
+    venue: 'Online & Flipkart HQ Bengaluru',
+    eventUrl: 'https://unstop.com',
+    startsAt: '2026-11-18T09:00:00Z',
+    organizerName: 'Flipkart'
   }
 ];
 
@@ -1286,6 +1315,14 @@ function Events({ me, onUserUpdate, setNotice }) {
         sub="Discover approved hackathons, workshops, and gatherings—or apply to participate."
         action={
           <div className="page-head-actions">
+            <button
+              className="btn btn-secondary"
+              onClick={handleSyncWeb}
+              disabled={syncingWeb}
+              title="Search and crawl upcoming Indian and global hackathons"
+            >
+              <Sparkles size={15} /> {syncingWeb ? 'Syncing...' : 'Sync Indian Hackathons'}
+            </button>
             {!me && (
               <NavLink to="/login" className="btn btn-primary">
                 <LogIn size={15} /> Sign in to Apply
@@ -1354,7 +1391,7 @@ function Events({ me, onUserUpdate, setNotice }) {
 
       {tab === 'all' && (
         <div className="event-grid event-grid-wide">
-          {items.map((e, i) => (
+          {(items.length > 0 ? items : sampleEvents).map((e, i) => (
             <EventCard
               key={e.id}
               event={e}
@@ -1365,7 +1402,6 @@ function Events({ me, onUserUpdate, setNotice }) {
               }}
             />
           ))}
-          {!items.length && <Empty text="No approved events available right now." />}
         </div>
       )}
 
