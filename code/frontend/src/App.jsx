@@ -1107,10 +1107,6 @@ function Discover({ me }) {
               key={e.id}
               event={e}
               index={i}
-              onApply={() => {
-                if (!me) navigate('/login');
-                else setApplyEvent(e);
-              }}
             />
           ))}
         {events.length === 0 && <Empty text="No approved events yet. Check back soon." />}
@@ -1139,17 +1135,6 @@ function Discover({ me }) {
         {posts.length === 0 && <Empty text="No open recruitment posts yet. Be the first to create one in 'My teams'!" />}
       </div>
 
-      {applyEvent && (
-        <ApplyModal
-          event={applyEvent}
-          onClose={() => setApplyEvent(null)}
-          onSuccess={() => {
-            setApplyEvent(null);
-            alert('Application submitted! The event organizer has received your details.');
-          }}
-        />
-      )}
-
       {joinPost && (
         <JoinRequestModal
           post={joinPost}
@@ -1177,7 +1162,7 @@ function Stat({ icon, label, value, tone }) {
   );
 }
 
-function EventCard({ event, index = 0, isOwner = false, onApply }) {
+function EventCard({ event, index = 0, isOwner = false }) {
   const category = index % 3 === 0 ? 'COMMUNITY' : index % 3 === 1 ? 'WORKSHOP' : 'HACKATHON';
 
   return (
@@ -1220,15 +1205,10 @@ function EventCard({ event, index = 0, isOwner = false, onApply }) {
                 target="_blank"
                 rel="noreferrer"
                 className="event-link-pill"
-                title="Open event site"
+                title="Open official event site"
               >
-                Site <ArrowUpRight size={13} />
+                Explore Event <ArrowUpRight size={13} />
               </a>
-            )}
-            {onApply && !isOwner && (
-              <button className="btn btn-primary btn-sm" onClick={onApply} style={{ padding: '6px 14px' }}>
-                Apply / Register
-              </button>
             )}
           </div>
         </div>
@@ -1268,12 +1248,10 @@ function Events({ me, onUserUpdate, setNotice }) {
   const [total, setTotal] = useState(0);
   const pageSize = 20;
   const [myEvents, setMyEvents] = useState([]);
-  const [myApplications, setMyApplications] = useState([]);
   const [pendingEvents, setPendingEvents] = useState([]);
   const [tab, setTab] = useState('all');
   const [err, setErr] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
-  const [applyModalEvent, setApplyModalEvent] = useState(null);
   const [syncingWeb, setSyncingWeb] = useState(false);
   const navigate = useNavigate();
 
@@ -1291,7 +1269,6 @@ function Events({ me, onUserUpdate, setNotice }) {
 
     if (me) {
       api('/events/mine').then(d => setMyEvents(d || [])).catch(() => setMyEvents([]));
-      getMyEventApplications().then(d => setMyApplications(d || [])).catch(() => setMyApplications([]));
       if (isAdmin) {
         getPendingEvents().then(d => setPendingEvents(d || [])).catch(() => setPendingEvents([]));
       }
@@ -1349,7 +1326,7 @@ function Events({ me, onUserUpdate, setNotice }) {
           <div className="page-head-actions">
             {!me && (
               <NavLink to="/login" className="btn btn-primary">
-                <LogIn size={15} /> Sign in to Apply
+                <LogIn size={15} /> Sign In
               </NavLink>
             )}
             {me && isOrganizer && (
@@ -1376,15 +1353,6 @@ function Events({ me, onUserUpdate, setNotice }) {
         >
           All Approved Events <span className="tab-count">{items.length}</span>
         </button>
-
-        {me && (
-          <button
-            className={'tab-btn ' + (tab === 'applied' ? 'active' : '')}
-            onClick={() => setTab('applied')}
-          >
-            My Event Applications <span className="tab-count">{myApplications.length}</span>
-          </button>
-        )}
 
         {me && isOrganizer && (
           <button
@@ -1421,10 +1389,6 @@ function Events({ me, onUserUpdate, setNotice }) {
                 key={e.id}
                 event={e}
                 index={i}
-                onApply={() => {
-                  if (!me) navigate('/login');
-                  else setApplyModalEvent(e);
-                }}
               />
             ))}
             {!items.length && <Empty text="No approved events available right now." />}
@@ -1462,37 +1426,6 @@ function Events({ me, onUserUpdate, setNotice }) {
             </div>
           )}
         </>
-      )}
-
-      {tab === 'applied' && (
-        <div className="panel">
-          <div className="panel-title">
-            <div>
-              <h2>Your Event Registrations</h2>
-              <p>Track the approval status of hackathons and workshops you have applied to.</p>
-            </div>
-            <FileText />
-          </div>
-
-          {myApplications.length === 0 ? (
-            <Empty text="You haven't submitted any event applications yet. Explore approved events and click 'Apply / Register'!" />
-          ) : (
-            myApplications.map(app => (
-              <div className="list-row" key={app.id}>
-                <div className="list-icon"><CalendarDays /></div>
-                <div className="list-main">
-                  <b>{app.eventTitle}</b>
-                  <small>
-                    Venue: {app.venue || 'TBA'} · Applied: {new Date(app.createdAt).toLocaleDateString()}
-                  </small>
-                </div>
-                <span className={'app-status-badge ' + app.status}>
-                  {app.status}
-                </span>
-              </div>
-            ))
-          )}
-        </div>
       )}
 
       {tab === 'mine' && (
@@ -1627,18 +1560,6 @@ function Events({ me, onUserUpdate, setNotice }) {
           onSuccess={(title) => {
             setShowAddModal(false);
             if (setNotice) setNotice(`Event "${title}" submitted successfully!`);
-            load();
-          }}
-        />
-      )}
-
-      {applyModalEvent && (
-        <ApplyModal
-          event={applyModalEvent}
-          onClose={() => setApplyModalEvent(null)}
-          onSuccess={() => {
-            setApplyModalEvent(null);
-            if (setNotice) setNotice('Application submitted! The organizer has received your details.');
             load();
           }}
         />
